@@ -10,6 +10,8 @@
 
     type URI = String
 
+    data WS :: !
+
     type WebSocket eff = ContT Unit (WithWebSocket eff)
 
     type WebSocketConfig = { protocols :: [Protocol], uri :: URI }

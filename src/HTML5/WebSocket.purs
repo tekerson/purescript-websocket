@@ -2,6 +2,7 @@ module HTML5.WebSocket
   ( Protocol ()
   , Socket ()
   , URI ()
+  , WS ()
   , WebSocket ()
   , WebSocketConfig ()
   , WebSocketError ()
@@ -46,7 +47,7 @@ foreign import withWebSocketImpl """
       try {
         socket = new window.WebSocket(config.uri, config.protocols);
       } catch (e) {
-        err(e.type);
+        err(e.type)();
         return {};
       }
       h = handlers(socket);
@@ -72,7 +73,7 @@ foreign import withWebSocketImpl """
           Fn4 WebSocketConfig
               (WebSocketHandler eff)
               (Unit -> WithWebSocket eff Unit)
-              (String -> WithWebSocket eff Unit)
+              (WebSocketError -> WithWebSocket eff Unit)
               (WithWebSocket eff Unit)
 
 defaultHandlers :: forall eff. WebSocketHandler eff
