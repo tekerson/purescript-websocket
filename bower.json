@@ -1,0 +1,26 @@
+{
+  "name": "purescript-websocket",
+  "version": "0.1.0",
+  "authors": [
+    "Brenton Alker <brenton@tekerson.com>"
+  ],
+  "description": "Basic HTML5 WebSocket bindings",
+  "keywords": [
+    "purescript",
+    "websocket"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components"
+  ],
+  "dependencies": {
+    "purescript-maybe": "~0.2.1",
+    "purescript-transformers": "~0.3.0",
+    "purescript-control": "~0.2.1"
+  },
+  "resolutions": {
+    "purescript-arrays": "0.3.0"
+  }
+}
