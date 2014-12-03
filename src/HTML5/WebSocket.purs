@@ -11,6 +11,7 @@ module HTML5.WebSocket
   , defaultHandlers
   , send
   , withWebSocket
+  , runWebSocket
   ) where
 
 import Control.Monad.Eff (Eff (..))
@@ -39,6 +40,9 @@ type WebSocketHandler eff = Socket ->
   { onOpen :: WithWebSocket eff Unit
   , onMessage :: String -> WithWebSocket eff Unit
   }
+
+runWebSocket :: forall eff. WebSocket eff Unit -> WithWebSocket eff Unit
+runWebSocket = flip runContT return
 
 foreign import withWebSocketImpl """
   function withWebSocketImpl (config, handlers, ok, err) {
@@ -79,7 +83,7 @@ foreign import withWebSocketImpl """
 defaultHandlers :: forall eff. WebSocketHandler eff
 defaultHandlers _ =
   { onOpen: return unit
-  , onMessage: \_ -> return unit
+  , onMessage: const $ return unit
   }
 
 withWebSocket :: forall eff. WebSocketConfig
