@@ -1,5 +1,6 @@
 module HTML5.WebSocket
-  ( Protocol ()
+  ( ArrayBuffer ()
+  , Protocol ()
   , Socket ()
   , URI ()
   , WS ()
@@ -10,6 +11,7 @@ module HTML5.WebSocket
   , WithWebSocket ()
   , defaultHandlers
   , send
+  , bsend
   , withWebSocket
   , runWebSocket
   ) where
@@ -18,11 +20,14 @@ import Control.Monad.Eff (Eff (..))
 import Data.Either
 import Data.Function
 
+foreign import data ArrayBuffer :: *
+
 import Control.Monad.Cont.Trans
 
 type WebSocketConfig =
   { uri :: URI
   , protocols :: [Protocol]
+  , binary :: Boolean
   }
 
 type URI = String
@@ -39,6 +44,7 @@ foreign import data Socket :: *
 type WebSocketHandler eff = Socket ->
   { onOpen :: WithWebSocket eff Unit
   , onMessage :: String -> WithWebSocket eff Unit
+  , onBuffer :: ArrayBuffer -> WithWebSocket eff Unit
   }
 
 runWebSocket :: forall eff. WebSocket eff Unit -> WithWebSocket eff Unit
@@ -55,12 +61,20 @@ foreign import withWebSocketImpl """
         return {};
       }
       h = handlers(socket);
+      if (config.binary) {
+        socket.binaryType = 'arraybuffer';
+        socket.onmessage = function (ev) {
+          h.onBuffer(ev.data)();
+          return {};
+        };
+      } else {
+        socket.onmessage = function (ev) {
+          h.onMessage(ev.data)();
+          return {};
+        };
+      }
       socket.onopen = function () {
         h.onOpen();
-        return {};
-      };
-      socket.onmessage = function (ev) {
-        h.onMessage(ev.data)();
         return {};
       };
       socket.onclose = function () {
@@ -84,6 +98,7 @@ defaultHandlers :: forall eff. WebSocketHandler eff
 defaultHandlers _ =
   { onOpen: return unit
   , onMessage: const $ return unit
+  , onBuffer: const $ return unit
   }
 
 withWebSocket :: forall eff. WebSocketConfig
@@ -99,7 +114,10 @@ foreign import sendImpl """
       socket.send(data);
       return {};
     };
-  }""" :: forall eff.  Fn2 Socket String (WithWebSocket eff Unit)
+  }""" :: forall eff a.  Fn2 Socket a (WithWebSocket eff Unit)
 
 send :: forall eff.  Socket -> String -> WithWebSocket eff Unit
 send = runFn2 sendImpl
+
+bsend :: forall eff.  Socket -> ArrayBuffer -> WithWebSocket eff Unit
+bsend = runFn2 sendImpl

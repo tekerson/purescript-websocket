@@ -17,10 +17,8 @@
   ],
   "dependencies": {
     "purescript-maybe": "~0.2.1",
-    "purescript-transformers": "~0.3.0",
-    "purescript-control": "~0.2.1"
-  },
-  "resolutions": {
-    "purescript-arrays": "0.3.0"
+    "purescript-transformers": "~0.5.0",
+    "purescript-control": "~0.2.1",
+    "purescript-arraybuffer-types": "~0.1.0"
   }
 }
