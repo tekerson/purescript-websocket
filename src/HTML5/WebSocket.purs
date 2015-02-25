@@ -1,6 +1,5 @@
 module HTML5.WebSocket
-  ( ArrayBuffer ()
-  , Protocol ()
+  ( Protocol ()
   , Socket ()
   , URI ()
   , WS ()
@@ -19,8 +18,7 @@ module HTML5.WebSocket
 import Control.Monad.Eff (Eff (..))
 import Data.Either
 import Data.Function
-
-foreign import data ArrayBuffer :: *
+import Data.ArrayBuffer.Types
 
 import Control.Monad.Cont.Trans
 
