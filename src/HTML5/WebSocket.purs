@@ -14,7 +14,8 @@ module WebSocket
   , runWebSocket
   ) where
 
-import Control.Monad.Eff (Eff (..))
+import Prelude
+import Control.Monad.Eff
 import Data.Either
 import Data.Function
 
@@ -22,7 +23,7 @@ import Control.Monad.Cont.Trans
 
 type WebSocketConfig =
   { uri :: URI
-  , protocols :: [Protocol]
+  , protocols :: Array Protocol
   }
 
 type URI = String
