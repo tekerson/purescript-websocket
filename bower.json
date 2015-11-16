@@ -16,8 +16,9 @@
     "bower_components"
   ],
   "dependencies": {
-    "purescript-maybe": "~0.2.1",
-    "purescript-transformers": "~0.4.0",
-    "purescript-control": "~0.2.1"
+    "purescript-maybe": "~0.3.5",
+    "purescript-transformers": "~0.8.0",
+    "purescript-control": "~0.3.2",
+    "purescript-functions": "~0.1.0"
   }
 }
