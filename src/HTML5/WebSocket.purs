@@ -1,6 +1,5 @@
 module WebSocket
-  ( ArrayBuffer ()
-  , Protocol ()
+  ( Protocol ()
   , Socket ()
   , URI ()
   , WS ()
@@ -21,8 +20,7 @@ import Control.Monad.Eff (Eff)
 import Data.Either (Either(..))
 import Control.Monad.Cont.Trans (ContT(..), runContT)
 import Data.Function.Uncurried (runFn2, Fn2, Fn4, runFn4)
-
-foreign import data ArrayBuffer :: *
+import Data.ArrayBuffer.Types (ArrayBuffer)
 
 
 type WebSocketConfig =
