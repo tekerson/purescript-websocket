@@ -16,9 +16,13 @@
     "bower_components"
   ],
   "dependencies": {
-    "purescript-maybe": "~0.2.1",
-    "purescript-transformers": "~0.5.0",
-    "purescript-control": "~0.2.1",
-    "purescript-arraybuffer-types": "~0.1.1"
+    "purescript-maybe": "~1.0.0",
+    "purescript-transformers": "~1.0.0",
+    "purescript-control": "~1.0.0",
+    "purescript-functions": "~1.0.0",
+    "purescript-arraybuffer-types": "~0.2.0"
+  },
+  "devDependencies": {
+    "purescript-console": "~1.0.0"
   }
 }

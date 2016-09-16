@@ -1,5 +1,6 @@
-module HTML5.WebSocket
-  ( Protocol ()
+module WebSocket
+  ( ArrayBuffer ()
+  , Protocol ()
   , Socket ()
   , URI ()
   , WS ()
@@ -15,16 +16,18 @@ module HTML5.WebSocket
   , runWebSocket
   ) where
 
-import Control.Monad.Eff (Eff (..))
-import Data.Either
-import Data.Function
-import Data.ArrayBuffer.Types
+import Prelude
+import Control.Monad.Eff (Eff)
+import Data.Either (Either(..))
+import Control.Monad.Cont.Trans (ContT(..), runContT)
+import Data.Function.Uncurried (runFn2, Fn2, Fn4, runFn4)
 
-import Control.Monad.Cont.Trans
+foreign import data ArrayBuffer :: *
+
 
 type WebSocketConfig =
   { uri :: URI
-  , protocols :: [Protocol]
+  , protocols :: Array Protocol
   , binary :: Boolean
   }
 
@@ -46,46 +49,9 @@ type WebSocketHandler eff = Socket ->
   }
 
 runWebSocket :: forall eff. WebSocket eff Unit -> WithWebSocket eff Unit
-runWebSocket = flip runContT return
+runWebSocket = flip runContT pure
 
-foreign import withWebSocketImpl """
-  function withWebSocketImpl (config, handlers, ok, err) {
-    return function () {
-      var socket, h;
-      try {
-        socket = new window.WebSocket(config.uri, config.protocols);
-      } catch (e) {
-        err(e.type)();
-        return {};
-      }
-      h = handlers(socket);
-      if (config.binary) {
-        socket.binaryType = 'arraybuffer';
-        socket.onmessage = function (ev) {
-          h.onBuffer(ev.data)();
-          return {};
-        };
-      } else {
-        socket.onmessage = function (ev) {
-          h.onMessage(ev.data)();
-          return {};
-        };
-      }
-      socket.onopen = function () {
-        h.onOpen();
-        return {};
-      };
-      socket.onclose = function () {
-        ok({})();
-        return {};
-      };
-      socket.onerror = function (e) {
-        err(e)();
-        return {};
-      };
-      return {};
-    };
-  }""" :: forall eff.
+foreign import withWebSocketImpl :: forall eff.
           Fn4 WebSocketConfig
               (WebSocketHandler eff)
               (Unit -> WithWebSocket eff Unit)
@@ -94,9 +60,9 @@ foreign import withWebSocketImpl """
 
 defaultHandlers :: forall eff. WebSocketHandler eff
 defaultHandlers _ =
-  { onOpen: return unit
-  , onMessage: const $ return unit
-  , onBuffer: const $ return unit
+  { onOpen: pure unit
+  , onMessage: const $ pure unit
+  , onBuffer: const $ pure unit
   }
 
 withWebSocket :: forall eff. WebSocketConfig
@@ -106,13 +72,7 @@ withWebSocket c h = ContT $ \k -> runFn4 withWebSocketImpl c h
                                          (k <<< Right)
                                          (k <<< Left)
 
-foreign import sendImpl """
-  function sendImpl (socket, data) {
-    return function () {
-      socket.send(data);
-      return {};
-    };
-  }""" :: forall eff a.  Fn2 Socket a (WithWebSocket eff Unit)
+foreign import sendImpl :: forall eff a.  Fn2 Socket a (WithWebSocket eff Unit)
 
 send :: forall eff.  Socket -> String -> WithWebSocket eff Unit
 send = runFn2 sendImpl
