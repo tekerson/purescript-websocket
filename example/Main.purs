@@ -1,8 +1,8 @@
 module Main where
 
-import Prelude
+import Prelude (Unit, bind, (<<<), ($))
 import WebSocket
-import Control.Monad.Eff.Console
+import Control.Monad.Eff.Console (CONSOLE, log)
 import Control.Monad.Eff (Eff ())
 import Control.Monad.Trans (lift)
 import Data.Either (Either (Left, Right))
@@ -16,9 +16,11 @@ main = do
          Right _ -> output "DONE"
          Left err -> output err
 
+config :: WebSocketConfig
 config =
   { uri: "ws://127.0.0.1:9001"
   , protocols: []
+  , binary: false
   }
 
 handlers :: forall eff. WebSocketHandler (console :: CONSOLE | eff)

@@ -16,10 +16,18 @@ exports.withWebSocketImpl = function(config, handlers, ok, err) {
             h.onOpen();
             return {};
         };
-        socket.onmessage = function(ev) {
-            h.onMessage(ev.data)();
-            return {};
-        };
+	if (config.binary) {
+            socket.binaryType = 'arraybuffer';
+            socket.onmessage = function (ev) {
+		h.onBuffer(ev.data)();
+		return {};
+            };
+	} else {
+            socket.onmessage = function (ev) {
+		h.onMessage(ev.data)();
+		return {};
+            };
+	}
         socket.onclose = function() {
             ok({})();
             return {};
