@@ -16,7 +16,7 @@ module WebSocket
   ) where
 
 import Prelude
-import Control.Monad.Eff (Eff)
+import Control.Monad.Eff (kind Effect, Eff)
 import Data.Either (Either(..))
 import Control.Monad.Cont.Trans (ContT(..), runContT)
 import Data.Function.Uncurried (runFn2, Fn2, Fn4, runFn4)
@@ -36,9 +36,9 @@ type WithWebSocket eff = Eff (ws :: WS | eff)
 type WebSocket eff = ContT Unit (WithWebSocket eff)
 type WebSocketError = String
 
-foreign import data WS :: !
+foreign import data WS :: Effect
 
-foreign import data Socket :: *
+foreign import data Socket :: Type
 
 type WebSocketHandler eff = Socket ->
   { onOpen :: WithWebSocket eff Unit
